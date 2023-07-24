@@ -1,0 +1,18 @@
+{
+	"name": "Transportation",
+	"source": "src",
+	"include": "include",
+	"obj": ".release\\",
+	"exe": ".release\\Transportation",
+	"options":
+	[
+		"/GS-",
+		"/link",
+		"/NOD",
+		"/INCREMENTAL:NO",
+		"lib\\Filesystem.lib",
+		"lib\\Memory.lib",
+		"lib\\Streaming.lib",
+		"lib\\String.lib"
+	]
+}
