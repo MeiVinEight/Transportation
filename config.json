@@ -14,7 +14,7 @@
 		"lib\\Memory.lib",
 		"lib\\Streaming.lib",
 		"lib\\String.lib",
-		"lib\\WSA.dll",
-		"lib\\WTM.dll"
+		"lib\\WSA.lib",
+		"lib\\WTM.lib"
 	]
 }
