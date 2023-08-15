@@ -30,6 +30,7 @@ namespace String
 		STRINGAPI bool operator!=(const String::string &) const;
 		STRINGAPI char &operator[](QWORD) const;
 		STRINGAPI String::string &operator+=(const char *) &;
+		STRINGAPI String::string &operator+=(const char);
 		STRINGAPI String::string &operator+=(const String::string &) &;
 		STRINGAPI String::string operator+(const char *) const;
 		STRINGAPI String::string operator+(const String::string &) const;
