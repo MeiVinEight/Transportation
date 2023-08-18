@@ -15,6 +15,7 @@
 		"lib\\Streaming.lib",
 		"lib\\String.lib",
 		"lib\\WSA.lib",
-		"lib\\WTM.lib"
+		"lib\\WTM.lib",
+		"lib\\typeinfo.obj"
 	]
 }
