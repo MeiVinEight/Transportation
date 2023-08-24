@@ -11,7 +11,8 @@ link_directories(
 	.release
 )
 
-add_executable(Transportation ${SOURCE})
+add_executable(Transportation ${SOURCE}
+	src/DllMain.c)
 target_link_libraries(Transportation
 	Memory.lib
 	String.lib
