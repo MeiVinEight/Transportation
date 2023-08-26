@@ -1,5 +1,4 @@
 #include <sstring.h>
-#include <streaming.h>
 #include <standardstream.h>
 #include <cthread.h>
 
@@ -50,7 +49,18 @@ DWORD T01C(void *)
 
 int main()
 {
+	Transportation::cout << "Register commands";
 	Transportation::command += new Transportation::CommandStop();
+
+	Transportation::cout << "Create console command thread";
 	WTM::thread::create(T01C, nullptr);
 	return 0;
+}
+
+extern "C"
+{
+void CRTStartup()
+{
+	Transportation::cout << "CRT Startup successful";
+}
 }
