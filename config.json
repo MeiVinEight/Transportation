@@ -16,6 +16,7 @@
 		"lib\\String.lib",
 		"lib\\WSA.lib",
 		"lib\\WTM.lib",
+		"lib\\Timestamp.lib",
 		"lib\\typeinfo.obj"
 	]
 }
