@@ -1,4 +1,5 @@
 int main();
+void CRTStartup(void);
 
 #ifndef CMAKE_BUILD
 
@@ -18,6 +19,7 @@ void CRTINIT()
 			(*xca)();
 		}
 	}
+	CRTStartup();
 }
 
 int mainCRTStartup()
