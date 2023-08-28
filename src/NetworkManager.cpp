@@ -9,11 +9,11 @@ Transportation::NetworkManager::~NetworkManager()
 	}
 	delete[] this->connection;
 }
-void Transportation::NetworkManager::operator+=(const WSA::Socket &socket)
+void Transportation::NetworkManager::operator+=(Transportation::ConnectionManager *cn)
 {
 	Transportation::ConnectionManager **conn = new Transportation::ConnectionManager *[this->length + 1];
 	Memory::copy(conn, this->connection, sizeof(Transportation::ConnectionManager *) * this->length);
-	this->connection[this->length++] = new Transportation::ConnectionManager((WSA::Socket &&) socket);
+	this->connection[this->length++] = cn;
 	delete[] this->connection;
 	this->connection = conn;
 }

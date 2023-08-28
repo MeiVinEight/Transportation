@@ -11,7 +11,7 @@ namespace Transportation
 		QWORD length = 0;
 		Transportation::ConnectionManager **connection = nullptr;
 		virtual ~NetworkManager();
-		void operator+=(const WSA::Socket &);
+		void operator+=(Transportation::ConnectionManager *);
 		Transportation::ConnectionManager *operator[](const String::string &) const;
 	};
 }
