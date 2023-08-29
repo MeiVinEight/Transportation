@@ -23,7 +23,7 @@ Transportation::packet::Datapack *Transportation::ConnectionManager::operator()(
 }
 Transportation::ConnectionManager &Transportation::ConnectionManager::operator<<(const Transportation::packet::Datapack &datapack)
 {
-	WORD id = Memory::LE::get(datapack.ID);
+	WORD id = Memory::BE::get(datapack.ID);
 	this->stream.write(&id, 2);
 	datapack >> this->stream;
 	return *this;
