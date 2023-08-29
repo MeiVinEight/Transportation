@@ -5,6 +5,7 @@
 
 namespace Transportation
 {
+	class ConnectionManager;
 	namespace packet
 	{
 		class Datapack
@@ -13,6 +14,7 @@ namespace Transportation
 			const WORD ID;
 			Datapack(WORD);
 			virtual ~Datapack();
+			virtual void operator()(Transportation::ConnectionManager &) const;
 		};
 	}
 }
