@@ -9,7 +9,7 @@ namespace Transportation
 {
 	namespace protocol
 	{
-		extern Transportation::packet::Datapack *(*(datapack[]))(BYTE *);
+		extern Transportation::packet::Datapack *(*(datapack[]))();
 	}
 }
 #endif //TRANSPORTATION_PROTOCOL_H
