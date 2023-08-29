@@ -3,15 +3,23 @@
 
 #include <Socket.h>
 #include <sstring.h>
+#include <fully.h>
+
+#include "datapack.h"
 
 namespace Transportation
 {
 	class ConnectionManager
 	{
 		public:
-		const WSA::Socket connection;
+		WSA::Socket connection;
+		Streaming::fully stream;
 		String::string name;
 		ConnectionManager(WSA::Socket);
+		Transportation::ConnectionManager &operator>>(Transportation::packet::Datapack *(&));
+		Transportation::packet::Datapack *operator()();
+		Transportation::ConnectionManager &operator<<(const Transportation::packet::Datapack &);
+		void operator()(const Transportation::packet::Datapack &);
 	};
 } // Transportation
 
