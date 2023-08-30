@@ -12,6 +12,7 @@ namespace Transportation
 		Transportation::ConnectionManager **connection = nullptr;
 		virtual ~NetworkManager();
 		void operator+=(Transportation::ConnectionManager *);
+		void operator-=(Transportation::ConnectionManager *);
 		Transportation::ConnectionManager *operator[](const String::string &) const;
 	};
 }
