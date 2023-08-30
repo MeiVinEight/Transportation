@@ -1,7 +1,7 @@
-#include <stream.h>
-
 #include "protocol.h"
 #include "datapack.h"
+#include "Handshaking.h"
+#include "Disconnect.h"
 
 template<typename T>
 Transportation::packet::Datapack *ctor()
@@ -10,4 +10,6 @@ Transportation::packet::Datapack *ctor()
 }
 
 Transportation::packet::Datapack *(*(Transportation::protocol::datapack[]))() = {
+	ctor<Transportation::packet::Handshaking>,
+	ctor<Transportation::packet::Disconnect>
 };
