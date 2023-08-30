@@ -18,8 +18,8 @@ namespace Transportation
 		ConnectionManager(WSA::Socket);
 		Transportation::ConnectionManager &operator>>(Transportation::packet::Datapack *(&));
 		Transportation::packet::Datapack *operator()();
-		Transportation::ConnectionManager &operator<<(const Transportation::packet::Datapack &);
-		void operator()(const Transportation::packet::Datapack &);
+		Transportation::ConnectionManager &operator<<(Transportation::packet::Datapack &);
+		void operator()(Transportation::packet::Datapack &);
 	};
 } // Transportation
 

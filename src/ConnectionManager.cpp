@@ -21,14 +21,14 @@ Transportation::packet::Datapack *Transportation::ConnectionManager::operator()(
 	(*this) >> datapack;
 	return datapack;
 }
-Transportation::ConnectionManager &Transportation::ConnectionManager::operator<<(const Transportation::packet::Datapack &datapack)
+Transportation::ConnectionManager &Transportation::ConnectionManager::operator<<(Transportation::packet::Datapack &datapack)
 {
 	WORD id = Memory::BE::get(datapack.ID);
 	this->stream.write(&id, 2);
 	datapack >> this->stream;
 	return *this;
 }
-void Transportation::ConnectionManager::operator()(const Transportation::packet::Datapack &datapack)
+void Transportation::ConnectionManager::operator()(Transportation::packet::Datapack &datapack)
 {
 	(*this) << datapack;
 }
