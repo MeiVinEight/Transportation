@@ -1,4 +1,3 @@
-#include <standardstream.h>
 #include <timestamp.h>
 
 #include "Tstreaming.h"
@@ -8,28 +7,36 @@ Transportation::streaming::streaming(Streaming::stream *stream): Streaming::form
 }
 DWORD Transportation::streaming::write(const void *b, DWORD length)
 {
-	char prefix[] = "[00:00:00] ";
-	QWORD time = Timestamp::current();
-	time /= 1000;
-	QWORD SS = time % 60;
-	time /= 60;
-	QWORD MM = time % 60;
-	time /= 60;
-	QWORD HH = time % 24;
-	prefix[1] = (char) ('0' + (HH / 10));
-	prefix[2] = (char) ('0' + (HH % 10));
-	prefix[4] = (char) ('0' + (MM / 10));
-	prefix[5] = (char) ('0' + (MM % 10));
-	prefix[7] = (char) ('0' + (SS / 10));
-	prefix[8] = (char) ('0' + (SS % 10));
-
-	char LF = '\n';
-
+	const BYTE *beg = (const BYTE *) b;
+	const BYTE *end = beg + length;
 	QWORD ret = 0;
-	ret += this->Streaming::format::write("\x1B[1G\x1B[2K", 8);
-	ret += this->Streaming::format::write(prefix, 11);
-	ret += this->Streaming::format::write(b, length);
-	ret += this->Streaming::format::write(&LF, 1);
-	ret += this->Streaming::format::write("> ", 2);
+	while (beg < end)
+	{
+		if (this->LF)
+		{
+			char prefix[] = "[00:00:00] ";
+			QWORD time = Timestamp::current();
+			time /= 1000;
+			QWORD SS = time % 60;
+			time /= 60;
+			QWORD MM = time % 60;
+			time /= 60;
+			QWORD HH = time % 24;
+			prefix[1] = (char) ('0' + (HH / 10));
+			prefix[2] = (char) ('0' + (HH % 10));
+			prefix[4] = (char) ('0' + (MM / 10));
+			prefix[5] = (char) ('0' + (MM % 10));
+			prefix[7] = (char) ('0' + (SS / 10));
+			prefix[8] = (char) ('0' + (SS % 10));
+			this->Streaming::format::write("\x1B[1G\x1B[2K", 8);
+			this->Streaming::format::write(prefix, 11);
+			this->LF = false;
+		}
+		const BYTE *cur = beg;
+		while (cur < end && !(this->LF |= *cur++ == '\n'));
+		ret += this->Streaming::format::write(beg, cur - beg);
+		beg = cur;
+	}
+
 	return ret;
 }
