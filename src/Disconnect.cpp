@@ -26,7 +26,7 @@ void Transportation::packet::Disconnect::operator()(Transportation::ConnectionMa
 	}
 	str += "] Disconnect: ";
 	str += this->message;
-	Transportation::cout << str;
+	Transportation::cout << str << Streaming::LF;
 	// TODO delete ConnectionManager from NetworkManager
 }
 Transportation::packet::Disconnect &Transportation::packet::Disconnect::operator<<(Streaming::stream &stream)

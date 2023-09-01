@@ -68,7 +68,7 @@ DWORD T02C(void *)
 		DWORD length = buf.length;
 		if (!GetUserNameExA(2, (char *) buf.address, &length))
 		{
-			Transportation::cout << "Cannot get username";
+			Transportation::cout << "Cannot get username" << Streaming::LF;
 
 			String::string str = "[";
 			DWORD err = Memory::error();
@@ -77,7 +77,7 @@ DWORD T02C(void *)
 			str += Hexadecimal::format(x);
 			str += "] ";
 			str += Memory::message(err, Memory::DOSERROR);
-			Transportation::cout << str;
+			Transportation::cout << str << Streaming::LF;
 			return err;
 		}
 
@@ -95,12 +95,12 @@ DWORD T02C(void *)
 		name = String::string(nameBuf, (buf.address + length) - nameBuf);
 	}
 
-	Transportation::cout << (String::string("Username: ") + name);
+	Transportation::cout << (String::string("Username: ") + name) << Streaming::LF;
 
 	WSA::Socket server;
 	server.bind(WSA::SocketAddress(0));
 	server.listen();
-	Transportation::cout << (name + " listenng on " + String::stringify(server.LP));
+	Transportation::cout << (name + " listenng on " + String::stringify(server.LP)) << Streaming::LF;
 
 	while (server.opening())
 	{
@@ -112,7 +112,7 @@ DWORD T02C(void *)
 		}
 		ip += ':';
 		ip += String::stringify(socket.RP);
-		Transportation::cout << (String::string("Connection: ") + ip);
+		Transportation::cout << (String::string("Connection: ") + ip) << Streaming::LF;
 
 		socket.close();
 	}
@@ -128,7 +128,7 @@ int main()
 	Transportation::cout << "Create console command thread" << Streaming::LF;
 	WTM::thread::create(T01C, nullptr);
 
-	Transportation::cout << "Create connection listener";
+	Transportation::cout << "Create connection listener" << Streaming::LF;
 	WTM::thread::create(T02C, nullptr);
 
 	return 0;

@@ -21,7 +21,7 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 	str += String::stringify(this->version);
 	str += " N:";
 	str += this->name;
-	Transportation::cout << str;
+	Transportation::cout << str << Streaming::LF;
 }
 Transportation::packet::Handshaking &Transportation::packet::Handshaking::operator<<(Streaming::stream &stream)
 {
