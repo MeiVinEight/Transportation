@@ -1,6 +1,7 @@
 #include <sstring.h>
 #include <standardstream.h>
 #include <cthread.h>
+#include <streaming.h>
 
 #include "Transportation.h"
 #include "CMD.h"
@@ -11,6 +12,7 @@ DWORD T01C(void *)
 	bool running = true;
 	while (running)
 	{
+		Transportation::cout << "> ";
 		String::string cmd;
 		Streaming::cin >> cmd;
 
@@ -49,10 +51,10 @@ DWORD T01C(void *)
 
 int main()
 {
-	Transportation::cout << "Register commands";
+	Transportation::cout << "Register commands" << Streaming::LF;
 	Transportation::command += new Transportation::CommandStop();
 
-	Transportation::cout << "Create console command thread";
+	Transportation::cout << "Create console command thread" << Streaming::LF;
 	WTM::thread::create(T01C, nullptr);
 	return 0;
 }
@@ -61,6 +63,6 @@ extern "C"
 {
 void CRTStartup()
 {
-	Transportation::cout << "CRT Startup successful";
+	Transportation::cout << "CRT Startup successful" << Streaming::LF;
 }
 }
