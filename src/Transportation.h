@@ -8,8 +8,8 @@
 
 namespace Transportation
 {
-	Transportation::CommandManager command;
-	Transportation::streaming cout(&Streaming::cout);
+	extern Transportation::CommandManager command;
+	extern Transportation::streaming cout;
 }
 
 #endif //TRANSPORTATION_TRANSPORTATION_H
