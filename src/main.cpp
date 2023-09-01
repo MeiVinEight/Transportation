@@ -53,7 +53,6 @@ DWORD T01C(void *)
 	}
 	return 0;
 }
-Transportation::NetworkManager network;
 extern "C"
 {
 int GetUserNameExA(int, char *, DWORD *);
