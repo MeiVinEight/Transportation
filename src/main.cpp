@@ -57,9 +57,10 @@ extern "C"
 {
 int GetUserNameExA(int, char *, DWORD *);
 }
-DWORD T02C(void *)
+DWORD T02C(void *p)
 {
 	String::string name;
+	Transportation::NetworkManager &network = *((Transportation::NetworkManager *) p);
 
 	{
 		Memory::string buf(256);
@@ -101,7 +102,7 @@ DWORD T02C(void *)
 	server.listen();
 	Transportation::cout << (name + " listenng on " + String::stringify(server.LP)) << Streaming::LF;
 
-	while (server.opening())
+	while (server.opening() && network.opening)
 	{
 		WSA::Socket socket = server.accept();
 		String::string ip = socket.IP.string();
@@ -128,7 +129,7 @@ int main()
 	WTM::thread::create(T01C, nullptr);
 
 	Transportation::cout << "Create connection listener" << Streaming::LF;
-	WTM::thread::create(T02C, nullptr);
+	WTM::thread::create(T02C, &Transportation::network);
 
 	return 0;
 }

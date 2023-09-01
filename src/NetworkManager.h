@@ -8,6 +8,7 @@ namespace Transportation
 	class NetworkManager
 	{
 		public:
+		bool opening = true;
 		QWORD length = 0;
 		Transportation::ConnectionManager **connection = nullptr;
 		virtual ~NetworkManager();
