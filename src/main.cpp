@@ -12,6 +12,7 @@ DWORD T01C(void *)
 	bool running = true;
 	while (running)
 	{
+		Transportation::cout << "> ";
 		String::string cmd;
 		Streaming::cin >> cmd;
 
