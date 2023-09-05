@@ -12,7 +12,13 @@ DWORD Transportation::streaming::write(const void *b, DWORD length)
 	QWORD ret = 0;
 	while (beg < end)
 	{
-		if (this->LF)
+		bool LF = false;
+		const BYTE *cur = beg;
+		while (cur < end && !(LF |= *cur++ == '\n'));
+		QWORD pos = this->memory.length;
+		this->memory.resize(pos + (cur - beg));
+		Memory::copy(this->memory.address + pos, beg, cur - beg);
+		if (LF)
 		{
 			char prefix[] = "[00:00:00] ";
 			QWORD time = Timestamp::current();
@@ -28,13 +34,12 @@ DWORD Transportation::streaming::write(const void *b, DWORD length)
 			prefix[5] = (char) ('0' + (MM % 10));
 			prefix[7] = (char) ('0' + (SS / 10));
 			prefix[8] = (char) ('0' + (SS % 10));
-			this->Streaming::format::write("\x1B[1G\x1B[2K", 8);
+			this->Streaming::format::write("\x1B[1S\u001B7\x1B[1A\x1B[1G\x1B[1L", 18);
 			this->Streaming::format::write(prefix, 11);
-			this->LF = false;
+			ret += this->Streaming::format::write(this->memory.address, this->memory.length);
+			this->Streaming::format::write("\u001B8", 2);
+			this->memory.resize(0);
 		}
-		const BYTE *cur = beg;
-		while (cur < end && !(this->LF |= *cur++ == '\n'));
-		ret += this->Streaming::format::write(beg, cur - beg);
 		beg = cur;
 	}
 

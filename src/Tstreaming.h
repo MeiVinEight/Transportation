@@ -8,7 +8,7 @@ namespace Transportation
 	class streaming: public Streaming::format
 	{
 		private:
-		bool LF = true;
+		Memory::string memory;
 		public:
 		streaming(Streaming::stream *);
 		DWORD write(const void *, DWORD) override;
