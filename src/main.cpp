@@ -2,6 +2,7 @@
 #include <standardstream.h>
 #include <cthread.h>
 #include <streaming.h>
+#include <stringstream.h>
 
 #include "Transportation.h"
 #include "CMD.h"
@@ -12,9 +13,7 @@ DWORD T01C(void *)
 	bool running = true;
 	while (running)
 	{
-		Transportation::cout << "> ";
-		String::string cmd;
-		Streaming::cin >> cmd;
+		Transportation::cout.Streaming::format::write("> ", 2);
 
 		QWORD buflen = 64;
 		char *buf = new char[buflen];
@@ -26,7 +25,7 @@ DWORD T01C(void *)
 		{
 			char ch;
 			Streaming::cin >> ch;
-			continua &= ch != '\r' && ch != '\n';
+			continua &= ch != '\r'/* && ch != '\n'*/;
 			whitespace |= ch > 0x20;
 			if (continua && whitespace)
 			{
@@ -41,8 +40,17 @@ DWORD T01C(void *)
 				buf[idx++] = ch;
 			}
 		}
-		String::string options(buf, buflen);
+		Streaming::string str;
+		str.address.resize(idx);
+		Memory::copy(str.address.address, buf, idx);
 		delete[] buf;
+
+		Streaming::format strin(&str);
+
+		String::string cmd;
+		strin >> cmd;
+		String::string options(str.address.address + str.position, str.available());
+
 		const Transportation::CMD *obj = Transportation::command[cmd];
 		running = (!obj) || (*obj)(options);
 	}
