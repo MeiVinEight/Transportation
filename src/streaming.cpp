@@ -42,7 +42,7 @@ DWORD Transportation::streaming::write(const void *b, DWORD length)
 			prefix[5] = (char) ('0' + (MM % 10));
 			prefix[7] = (char) ('0' + (SS / 10));
 			prefix[8] = (char) ('0' + (SS % 10));
-			this->Streaming::format::write("\x1B[1S\u001B7\x1B[1A\x1B[1G\x1B[1L", 18);
+			this->Streaming::format::write("\u001B7\n\u001B8\x1B[1B\u001B7\x1B[1A\x1B[1G\x1B[1L", 23);
 			this->Streaming::format::write(prefix, 11);
 			ret += this->Streaming::format::write(this->memory.address, this->memory.length);
 			this->Streaming::format::write("\u001B8", 2);
