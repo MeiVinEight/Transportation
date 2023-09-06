@@ -16,6 +16,7 @@ namespace Transportation
 		Streaming::fully stream;
 		String::string name;
 		ConnectionManager(WSA::Socket);
+		~ConnectionManager();
 		Transportation::ConnectionManager &operator>>(Transportation::packet::Datapack *(&));
 		Transportation::packet::Datapack *operator()();
 		Transportation::ConnectionManager &operator<<(Transportation::packet::Datapack &);

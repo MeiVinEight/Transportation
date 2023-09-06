@@ -6,6 +6,12 @@
 Transportation::ConnectionManager::ConnectionManager(WSA::Socket socket): connection((WSA::Socket &&) socket), stream(&this->connection)
 {
 }
+Transportation::ConnectionManager::~ConnectionManager()
+{
+	this->connection.close();
+	this->stream.stream = nullptr;
+	this->name = String::string();
+}
 Transportation::ConnectionManager &Transportation::ConnectionManager::operator>>(Transportation::packet::Datapack *(&datapack))
 {
 	WORD id = 0;
