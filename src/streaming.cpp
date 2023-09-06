@@ -1,6 +1,12 @@
 #include <timestamp.h>
+#include <cthread.h>
 
 #include "Tstreaming.h"
+
+extern "C"
+{
+long _InterlockedCompareExchange(long volatile*, long, long);
+}
 
 Transportation::streaming::streaming(Streaming::stream *stream): Streaming::format(stream)
 {
@@ -10,8 +16,10 @@ DWORD Transportation::streaming::write(const void *b, DWORD length)
 	const BYTE *beg = (const BYTE *) b;
 	const BYTE *end = beg + length;
 	QWORD ret = 0;
+
 	while (beg < end)
 	{
+		this->lock();
 		bool LF = false;
 		const BYTE *cur = beg;
 		while (cur < end && !(LF |= *cur++ == '\n'));
@@ -39,9 +47,30 @@ DWORD Transportation::streaming::write(const void *b, DWORD length)
 			ret += this->Streaming::format::write(this->memory.address, this->memory.length);
 			this->Streaming::format::write("\u001B8", 2);
 			this->memory.resize(0);
+
+			this->unlock();
 		}
 		beg = cur;
 	}
 
 	return ret;
+}
+void Transportation::streaming::lock()
+{
+	// check whether current occupied the lock
+	DWORD current = WTM::thread::current().ID();
+	if (this->exclusive != current)
+	{
+		// if not, try to acquire the lock, use thread id as locker
+		while (_InterlockedCompareExchange((long volatile *) &this->exclusive, (long) current, 0))
+		{
+			// self spin
+			WTM::thread::sleep(1);
+		}
+	}
+}
+void Transportation::streaming::unlock()
+{
+	// clear occupier
+	this->exclusive = 0;
 }

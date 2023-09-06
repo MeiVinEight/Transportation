@@ -13,7 +13,9 @@ DWORD T01C(void *)
 	bool running = true;
 	while (running)
 	{
+		Transportation::cout.lock();
 		Transportation::cout.Streaming::format::write("> ", 2);
+		Transportation::cout.unlock();
 
 		QWORD buflen = 64;
 		char *buf = new char[buflen];

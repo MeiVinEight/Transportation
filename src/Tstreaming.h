@@ -9,9 +9,12 @@ namespace Transportation
 	{
 		private:
 		Memory::string memory;
+		volatile DWORD exclusive = 0;
 		public:
 		streaming(Streaming::stream *);
 		DWORD write(const void *, DWORD) override;
+		void lock();
+		void unlock();
 	};
 } // Transportation
 
