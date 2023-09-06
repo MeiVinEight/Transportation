@@ -1,4 +1,5 @@
 #include "NetworkManager.h"
+#include "Transportation.h"
 
 Transportation::NetworkManager::~NetworkManager()
 {
@@ -12,13 +13,14 @@ Transportation::NetworkManager::~NetworkManager()
 	delete[] this->connection;
 	this->connection = nullptr;
 }
-void Transportation::NetworkManager::operator+=(Transportation::ConnectionManager *cn)
+void Transportation::NetworkManager::operator+=(Transportation::ConnectionManager *cm)
 {
 	Transportation::ConnectionManager **conn = new Transportation::ConnectionManager *[this->length + 1];
 	Memory::copy(conn, this->connection, sizeof(Transportation::ConnectionManager *) * this->length);
 	delete[] this->connection;
 	this->connection = conn;
-	this->connection[this->length++] = cn;
+	this->connection[this->length++] = cm;
+	Transportation::cout << cm->name << " (" << WSA::SocketAddress(cm->connection.IP, cm->connection.RP).stringify() << " ) joined the communication" << Streaming::LF;
 }
 void Transportation::NetworkManager::operator-=(Transportation::ConnectionManager *cm)
 {
