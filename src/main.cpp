@@ -107,7 +107,7 @@ DWORD T02C(void *p)
 
 	Transportation::cout << (String::string("Username: ") + name) << Streaming::LF;
 
-	WSA::Socket server;
+	WSA::Socket &server = Transportation::network.server;
 	server.bind(WSA::SocketAddress(0));
 	server.listen();
 	Transportation::cout << (name + " listenng on " + String::stringify(server.LP)) << Streaming::LF;
