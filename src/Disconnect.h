@@ -12,6 +12,7 @@ namespace Transportation
 		class Disconnect: public Transportation::packet::Datapack
 		{
 			public:
+			static const DWORD ID = 1;
 			String::string message;
 			Disconnect();
 			void operator()(Transportation::ConnectionManager &) const override;

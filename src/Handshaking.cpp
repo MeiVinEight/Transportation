@@ -4,7 +4,7 @@
 #include "ConnectionManager.h"
 #include "Transportation.h"
 
-Transportation::packet::Handshaking::Handshaking(): Transportation::packet::Datapack(0)
+Transportation::packet::Handshaking::Handshaking(): Transportation::packet::Datapack(Transportation::packet::Handshaking::ID)
 {
 }
 void Transportation::packet::Handshaking::operator()(Transportation::ConnectionManager &cm) const

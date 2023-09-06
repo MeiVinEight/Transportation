@@ -12,6 +12,7 @@ namespace Transportation
 		class Handshaking: public Transportation::packet::Datapack
 		{
 			public:
+			static const DWORD ID = 0;
 			WORD version;
 			String::string name;
 			Handshaking();

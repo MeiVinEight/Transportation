@@ -3,7 +3,7 @@
 #include "ConnectionManager.h"
 #include "Transportation.h"
 
-Transportation::packet::Disconnect::Disconnect(): Transportation::packet::Datapack(1)
+Transportation::packet::Disconnect::Disconnect(): Transportation::packet::Datapack(Transportation::packet::Disconnect::ID)
 {
 }
 void Transportation::packet::Disconnect::operator()(Transportation::ConnectionManager &cm) const
