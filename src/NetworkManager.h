@@ -9,7 +9,7 @@ namespace Transportation
 	{
 		public:
 		WSA::Socket server;
-		bool opening = true;
+		bool opening = false;
 		QWORD length = 0;
 		Transportation::ConnectionManager **connection = nullptr;
 		virtual ~NetworkManager();

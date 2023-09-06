@@ -2,12 +2,15 @@
 
 Transportation::NetworkManager::~NetworkManager()
 {
-	this->length = 0;
+	this->opening = false;
+	this->server.close();
 	for (QWORD i = 0; i < this->length; i++)
 	{
 		delete this->connection[i];
 	}
+	this->length = 0;
 	delete[] this->connection;
+	this->connection = nullptr;
 }
 void Transportation::NetworkManager::operator+=(Transportation::ConnectionManager *cn)
 {
