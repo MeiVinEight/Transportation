@@ -2,8 +2,6 @@
 #include <standardstream.h>
 #include <cthread.h>
 #include <exception.h>
-#include <hexadecimal.h>
-#include <endian.h>
 #include <Socket.h>
 #include <streaming.h>
 #include <stringstream.h>
@@ -12,6 +10,8 @@
 #include "CMD.h"
 #include "CommandStop.h"
 #include "NetworkManager.h"
+#include "protocol.h"
+#include "Handshaking.h"
 
 DWORD T01C(void *)
 {
@@ -83,12 +83,7 @@ DWORD T02C(void *p)
 
 			String::string str = "[";
 			DWORD err = Memory::error();
-			Memory::string x(4);
-			Memory::BE::set(err, x.address, 4);
-			str += Hexadecimal::format(x);
-			str += "] ";
-			str += Memory::message(err, Memory::DOSERROR);
-			Transportation::cout << str << Streaming::LF;
+			Transportation::cout << Memory::exception(err, Memory::DOSERROR);
 			return err;
 		}
 
@@ -118,6 +113,20 @@ DWORD T02C(void *p)
 		try
 		{
 			WSA::Socket socket = server.accept();
+			Transportation::ConnectionManager *cm = new Transportation::ConnectionManager((WSA::Socket &&) socket);
+			Transportation::packet::Datapack *datapack = (*cm)();
+			if (datapack->ID != Transportation::packet::Handshaking::ID)
+			{
+				socket.close();
+				continue;
+			}
+
+			Transportation::packet::Handshaking &handshaking = *((Transportation::packet::Handshaking *) datapack);
+			if (handshaking.version <= Transportation::protocol::version)
+			{
+				// TODO Handshaking check
+			}
+
 			String::string ip = socket.IP.string();
 			if (!socket.IP.IPV4())
 			{

@@ -13,3 +13,4 @@ Transportation::packet::Datapack *(*(Transportation::protocol::datapack[]))() = 
 	ctor<Transportation::packet::Handshaking>,
 	ctor<Transportation::packet::Disconnect>
 };
+WORD Transportation::protocol::version = 0;

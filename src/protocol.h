@@ -10,6 +10,7 @@ namespace Transportation
 	namespace protocol
 	{
 		extern Transportation::packet::Datapack *(*(datapack[]))();
+		extern WORD version;
 	}
 }
 #endif //TRANSPORTATION_PROTOCOL_H
