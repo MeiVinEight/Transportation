@@ -61,6 +61,7 @@ DWORD T01C(void *)
 		const Transportation::CMD *obj = Transportation::command[cmd];
 		running = (!obj) || (*obj)(options);
 	}
+	Transportation::cout << "Command thread exit" << Streaming::LF;
 	return 0;
 }
 extern "C"
@@ -114,19 +115,27 @@ DWORD T02C(void *p)
 
 	while (server.opening() && network.opening)
 	{
-		WSA::Socket socket = server.accept();
-		String::string ip = socket.IP.string();
-		if (!socket.IP.IPV4())
+		try
 		{
-			ip = String::string("[") + ip + "]";
-		}
-		ip += ':';
-		ip += String::stringify(socket.RP);
-		Transportation::cout << (String::string("Connection: ") + ip) << Streaming::LF;
+			WSA::Socket socket = server.accept();
+			String::string ip = socket.IP.string();
+			if (!socket.IP.IPV4())
+			{
+				ip = String::string("[") + ip + "]";
+			}
+			ip += ':';
+			ip += String::stringify(socket.RP);
+			Transportation::cout << (String::string("Connection: ") + ip) << Streaming::LF;
 
-		socket.close();
+			socket.close();
+		}
+		catch (Memory::exception &exce)
+		{
+			Transportation::cout << exce;
+		}
 	}
 
+	Transportation::cout << "Network thread exit" << Streaming::LF;
 	return 0;
 }
 
@@ -140,6 +149,8 @@ int main()
 
 	Transportation::cout << "Create connection listener" << Streaming::LF;
 	WTM::thread::create(T02C, &Transportation::network);
+
+	Transportation::cout << "Main thread exit" << Streaming::LF;
 
 	return 0;
 }
