@@ -8,26 +8,17 @@ Transportation::packet::Disconnect::Disconnect(): Transportation::packet::Datapa
 }
 void Transportation::packet::Disconnect::operator()(Transportation::ConnectionManager &cm) const
 {
-	String::string str = "[";
-	if(this->message)
+	if (cm.name)
 	{
-		str += this->message;
+		Transportation::cout << '[' << cm.name << "] ";
 	}
 	else
 	{
-		String::string ip = cm.connection.IP.string();
-		if (!cm.connection.IP.IPV4())
-		{
-			ip = String::string("[") + ip + "]";
-		}
-		str += ip;
-		str += ":";
-		str += String::stringify(cm.connection.RP);
+		Transportation::cout << '(' << WSA::SocketAddress(cm.connection.IP, cm.connection.RP).stringify() << ") ";
 	}
-	str += "] Disconnect: ";
-	str += this->message;
-	Transportation::cout << str << Streaming::LF;
-	// TODO delete ConnectionManager from NetworkManager
+	Transportation::cout << "Disconnect: " << this->message << Streaming::LF;
+	Transportation::network -= &cm;
+	delete &cm;
 }
 Transportation::packet::Disconnect &Transportation::packet::Disconnect::operator<<(Streaming::stream &stream)
 {

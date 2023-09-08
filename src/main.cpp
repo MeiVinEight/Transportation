@@ -12,6 +12,7 @@
 #include "NetworkManager.h"
 #include "protocol.h"
 #include "Handshaking.h"
+#include "Disconnect.h"
 
 DWORD T01C(void *)
 {
@@ -70,7 +71,7 @@ int GetUserNameExA(int, char *, DWORD *);
 }
 DWORD T02C(void *p)
 {
-	String::string name;
+	String::string username;
 	Transportation::NetworkManager &network = *((Transportation::NetworkManager *) p);
 
 	{
@@ -98,15 +99,15 @@ DWORD T02C(void *p)
 			nameBuf--;
 		}
 		nameBuf++;
-		name = String::string(nameBuf, (buf.address + length) - nameBuf);
+		username = String::string(nameBuf, (buf.address + length) - nameBuf);
 	}
 
-	Transportation::cout << (String::string("Username: ") + name) << Streaming::LF;
+	Transportation::cout << (String::string("Username: ") + username) << Streaming::LF;
 
 	WSA::Socket &server = Transportation::network.server;
-	server.bind(WSA::SocketAddress(0));
+	server.bind(WSA::SocketAddress(12138));
 	server.listen();
-	Transportation::cout << (name + " listenng on " + String::stringify(server.LP)) << Streaming::LF;
+	Transportation::cout << (username + " listenng on " + String::stringify(server.LP)) << Streaming::LF;
 
 	while (server.opening() && network.opening)
 	{
@@ -114,29 +115,53 @@ DWORD T02C(void *p)
 		{
 			WSA::Socket socket = server.accept();
 			Transportation::ConnectionManager *cm = new Transportation::ConnectionManager((WSA::Socket &&) socket);
+			Transportation::network += cm;
+
 			Transportation::packet::Datapack *datapack = (*cm)();
+			if (datapack->ID == Transportation::packet::Disconnect::ID)
+			{
+				Transportation::packet::Disconnect &disconnect = *((Transportation::packet::Disconnect *) datapack);
+				disconnect(*cm);
+				delete datapack;
+				continue;
+			}
 			if (datapack->ID != Transportation::packet::Handshaking::ID)
 			{
-				socket.close();
+				delete datapack;
+				delete cm;
 				continue;
 			}
 
 			Transportation::packet::Handshaking &handshaking = *((Transportation::packet::Handshaking *) datapack);
-			if (handshaking.version <= Transportation::protocol::version)
+			if (handshaking.version > Transportation::protocol::version)
 			{
-				// TODO Handshaking check
+				Transportation::packet::Disconnect disconnect;
+				disconnect.message = "Unsupported version";
+				(*cm)(disconnect);
+				Transportation::network -= cm;
+				delete cm;
+				delete datapack;
+				continue;
+			}
+			if (!handshaking.name)
+			{
+				Transportation::packet::Disconnect disconnect;
+				disconnect.message = "Empty username";
+				(*cm)(disconnect);
+				Transportation::network -= cm;
+				delete cm;
+				delete datapack;
+				continue;
 			}
 
-			String::string ip = socket.IP.string();
-			if (!socket.IP.IPV4())
-			{
-				ip = String::string("[") + ip + "]";
-			}
-			ip += ':';
-			ip += String::stringify(socket.RP);
-			Transportation::cout << (String::string("Connection: ") + ip) << Streaming::LF;
+			cm->name = handshaking.name;
+			Transportation::cout << cm->name << " (" << WSA::SocketAddress(cm->connection.IP, cm->connection.RP).stringify() << ") joined the communication" << Streaming::LF;
+			handshaking.version = Transportation::protocol::version;
+			handshaking.name = username;
+			(*cm)(handshaking);
+			delete datapack;
 
-			socket.close();
+			// socket.close();
 		}
 		catch (Memory::exception &exce)
 		{
@@ -156,6 +181,7 @@ int main()
 	Transportation::cout << "Create console command thread" << Streaming::LF;
 	WTM::thread::create(T01C, nullptr);
 
+	Transportation::network.opening = true;
 	Transportation::cout << "Create connection listener" << Streaming::LF;
 	WTM::thread::create(T02C, &Transportation::network);
 

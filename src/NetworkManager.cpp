@@ -20,7 +20,6 @@ void Transportation::NetworkManager::operator+=(Transportation::ConnectionManage
 	delete[] this->connection;
 	this->connection = conn;
 	this->connection[this->length++] = cm;
-	Transportation::cout << cm->name << " (" << WSA::SocketAddress(cm->connection.IP, cm->connection.RP).stringify() << " ) joined the communication" << Streaming::LF;
 }
 void Transportation::NetworkManager::operator-=(Transportation::ConnectionManager *cm)
 {

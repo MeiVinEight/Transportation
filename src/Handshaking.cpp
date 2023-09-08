@@ -10,6 +10,7 @@ Transportation::packet::Handshaking::Handshaking(): Transportation::packet::Data
 void Transportation::packet::Handshaking::operator()(Transportation::ConnectionManager &cm) const
 {
 	// String::string str = "[00:00:00:00]:0000 Handshaking V:0000 N:";
+	/*
 	String::string str = cm.connection.IP.string();
 	if (!cm.connection.IP.IPV4())
 	{
@@ -22,6 +23,7 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 	str += " N:";
 	str += this->name;
 	Transportation::cout << str << Streaming::LF;
+	*/
 }
 Transportation::packet::Handshaking &Transportation::packet::Handshaking::operator<<(Streaming::stream &stream)
 {
