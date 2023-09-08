@@ -19,6 +19,7 @@
 		"lib\\WSA.lib",
 		"lib\\WTM.lib",
 		"lib\\Timestamp.lib",
+		"lib\\Concurrency.lib",
 		"lib\\typeinfo.obj"
 	]
 }
