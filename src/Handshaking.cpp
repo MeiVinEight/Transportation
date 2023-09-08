@@ -27,7 +27,7 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 }
 Transportation::packet::Handshaking &Transportation::packet::Handshaking::operator<<(Streaming::stream &stream)
 {
-	stream.read(&this->version, 4);
+	stream.read(&this->version, 2);
 	this->version = Memory::BE::get(this->version);
 
 	BYTE length = 0;
