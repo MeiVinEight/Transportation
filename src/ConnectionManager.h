@@ -9,18 +9,21 @@
 
 namespace Transportation
 {
+	class NetworkManager;
 	class ConnectionManager
 	{
 		public:
+		Transportation::NetworkManager *network;
 		WSA::Socket connection;
 		Streaming::fully stream;
 		String::string name;
-		ConnectionManager(WSA::Socket);
+		ConnectionManager(Transportation::NetworkManager *, WSA::Socket);
 		~ConnectionManager();
 		Transportation::ConnectionManager &operator>>(Transportation::packet::Datapack *(&));
 		Transportation::packet::Datapack *operator()();
 		Transportation::ConnectionManager &operator<<(Transportation::packet::Datapack &);
 		void operator()(Transportation::packet::Datapack &);
+		void operator~();
 	};
 } // Transportation
 

@@ -9,6 +9,7 @@
 
 namespace Transportation
 {
+	extern String::string username;
 	extern Transportation::CommandManager command;
 	extern Transportation::streaming cout;
 	extern Transportation::NetworkManager network;

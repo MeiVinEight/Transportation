@@ -16,6 +16,7 @@ namespace Transportation
 		void operator+=(Transportation::ConnectionManager *);
 		void operator-=(Transportation::ConnectionManager *);
 		Transportation::ConnectionManager *operator[](const String::string &) const;
+		void operator~();
 	};
 }
 
