@@ -22,14 +22,17 @@ Transportation::NetworkManager::~NetworkManager()
 }
 void Transportation::NetworkManager::operator+=(Transportation::ConnectionManager *cm)
 {
+	this->lock++;
 	Transportation::ConnectionManager **conn = new Transportation::ConnectionManager *[this->length + 1];
 	Memory::copy(conn, this->connection, sizeof(Transportation::ConnectionManager *) * this->length);
 	delete[] this->connection;
 	this->connection = conn;
 	this->connection[this->length++] = cm;
+	this->lock--;
 }
 void Transportation::NetworkManager::operator-=(Transportation::ConnectionManager *cm)
 {
+	this->lock++;
 	QWORD newLen = this->length - !!this->length;
 	Transportation::ConnectionManager **conn = new Transportation::ConnectionManager *[newLen];
 	QWORD idx = 0;
@@ -42,20 +45,24 @@ void Transportation::NetworkManager::operator-=(Transportation::ConnectionManage
 	}
 	this->length = newLen;
 	this->connection = conn;
+	this->lock--;
 }
-Transportation::ConnectionManager *Transportation::NetworkManager::operator[](const String::string &name) const
+Transportation::ConnectionManager *Transportation::NetworkManager::operator[](const String::string &name)
 {
+	Transportation::ConnectionManager *ret = nullptr;
+	this->lock++;
 	if (name)
 	{
 		for (QWORD i = 0; i < this->length; i++)
 		{
 			if (this->connection[i]->name == name)
 			{
-				return this->connection[i];
+				ret = this->connection[i];
 			}
 		}
 	}
-	return nullptr;
+	this->lock--;
+	return ret;
 }
 void Transportation::NetworkManager::operator~()
 {

@@ -1,6 +1,8 @@
 #ifndef TRANSPORTATION_NETWORKMANAGER_H
 #define TRANSPORTATION_NETWORKMANAGER_H
 
+#include <ReentrantLock.h>
+
 #include "ConnectionManager.h"
 
 namespace Transportation
@@ -11,11 +13,12 @@ namespace Transportation
 		WSA::Socket server;
 		bool opening = false;
 		QWORD length = 0;
+		Concurrency::ReentrantLock lock;
 		Transportation::ConnectionManager **connection = nullptr;
 		virtual ~NetworkManager();
 		void operator+=(Transportation::ConnectionManager *);
 		void operator-=(Transportation::ConnectionManager *);
-		Transportation::ConnectionManager *operator[](const String::string &) const;
+		Transportation::ConnectionManager *operator[](const String::string &);
 		void operator~();
 	};
 }
