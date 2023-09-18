@@ -93,7 +93,7 @@ void Transportation::NetworkManager::operator~()
 
 	Transportation::cout << (String::string("Username: ") + username) << Streaming::LF;
 
-	this->server.bind(WSA::SocketAddress(12138));
+	this->server.bind(WSA::SocketAddress());
 	this->server.listen();
 	Transportation::cout << (username + " listenng on " + String::stringify(server.LP)) << Streaming::LF;
 
