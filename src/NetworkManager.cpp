@@ -10,12 +10,7 @@ int GetUserNameExA(int, char *, DWORD *);
 
 Transportation::NetworkManager::~NetworkManager()
 {
-	this->opening = false;
-	this->server.close();
-	for (QWORD i = 0; i < this->length; i++)
-	{
-		delete this->connection[i];
-	}
+	this->close();
 	this->length = 0;
 	delete[] this->connection;
 	this->connection = nullptr;
@@ -23,6 +18,7 @@ Transportation::NetworkManager::~NetworkManager()
 void Transportation::NetworkManager::operator+=(Transportation::ConnectionManager *cm)
 {
 	this->lock++;
+	(*cm)++;
 	Transportation::ConnectionManager **conn = new Transportation::ConnectionManager *[this->length + 1];
 	Memory::copy(conn, this->connection, sizeof(Transportation::ConnectionManager *) * this->length);
 	delete[] this->connection;
@@ -33,18 +29,17 @@ void Transportation::NetworkManager::operator+=(Transportation::ConnectionManage
 void Transportation::NetworkManager::operator-=(Transportation::ConnectionManager *cm)
 {
 	this->lock++;
-	QWORD newLen = this->length - !!this->length;
-	Transportation::ConnectionManager **conn = new Transportation::ConnectionManager *[newLen];
 	QWORD idx = 0;
 	for (QWORD i = 0; i < this->length; i++)
 	{
 		if (this->connection[i] != cm)
 		{
-			conn[idx++] = this->connection[i];
+			this->connection[idx++] = this->connection[i];
+			continue;
 		}
+		(*this->connection[i])--;
 	}
-	this->length = newLen;
-	this->connection = conn;
+	this->length = idx;
 	this->lock--;
 }
 Transportation::ConnectionManager *Transportation::NetworkManager::operator[](const String::string &name)
@@ -124,4 +119,36 @@ void Transportation::NetworkManager::operator~()
 	}
 
 	Transportation::cout << "Network thread exit" << Streaming::LF;
+}
+void Transportation::NetworkManager::connect(const WSA::SocketAddress &sa)
+{
+	WSA::Socket socket;
+	try
+	{
+		socket.connect(sa);
+		Transportation::ConnectionManager *cm = new Transportation::ConnectionManager(this, (WSA::Socket &&) socket);
+		DWORD (*lambda)(void *) = [](void *pVoid) -> DWORD
+		{
+			~*((Transportation::ConnectionManager *) pVoid);
+			return 0;
+		};
+		WTM::thread::create(lambda, cm);
+	}
+	catch (Memory::exception &exce)
+	{
+		Transportation::cout << "Cannot connect to " << sa.stringify() << Streaming::LF;
+		Transportation::cout << exce;
+	}
+}
+void Transportation::NetworkManager::close()
+{
+	this->lock++;
+	this->opening = false;
+	this->server.close();
+	Transportation::ConnectionManager **conn = this->connection;
+	for (QWORD i = 0; i < this->length; i++)
+	{
+		conn[i]->close("close");
+	}
+	this->lock--;
 }

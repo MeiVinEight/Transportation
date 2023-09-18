@@ -6,6 +6,6 @@ Transportation::CommandStop::CommandStop(): Transportation::CMD("stop")
 }
 bool Transportation::CommandStop::operator()(const String::string &) const
 {
-	Transportation::network.~NetworkManager();
+	Transportation::network.close();
 	return false;
 }

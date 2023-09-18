@@ -1,4 +1,5 @@
 #include <endian.h>
+#include <cthread.h>
 
 #include "Transportation.h"
 #include "NetworkManager.h"
@@ -6,6 +7,7 @@
 #include "protocol.h"
 #include "Handshaking.h"
 #include "Disconnect.h"
+#include "atomic.h"
 
 Transportation::ConnectionManager::ConnectionManager(Transportation::NetworkManager *network, WSA::Socket socket):
 network(network),
@@ -20,13 +22,23 @@ Transportation::ConnectionManager::~ConnectionManager()
 	this->stream.stream = nullptr;
 	this->name = String::string();
 }
+void Transportation::ConnectionManager::operator++(int)
+{
+	_InterlockedIncrement(&this->waiting);
+}
+void Transportation::ConnectionManager::operator--(int)
+{
+	_InterlockedDecrement(&this->waiting);
+}
 Transportation::ConnectionManager &Transportation::ConnectionManager::operator>>(Transportation::packet::Datapack *(&datapack))
 {
+	this->IL++;
 	WORD id = 0;
 	this->stream.read(&id, 2);
 	id = Memory::BE::get(id);
 	datapack = Transportation::protocol::datapack[id]();
 	(*datapack) << this->stream;
+	this->IL--;
 	return *this;
 }
 Transportation::packet::Datapack *Transportation::ConnectionManager::operator()()
@@ -37,9 +49,11 @@ Transportation::packet::Datapack *Transportation::ConnectionManager::operator()(
 }
 Transportation::ConnectionManager &Transportation::ConnectionManager::operator<<(Transportation::packet::Datapack &datapack)
 {
+	this->OL++;
 	WORD id = Memory::BE::get(datapack.ID);
 	this->stream.write(&id, 2);
 	datapack >> this->stream;
+	this->OL--;
 	return *this;
 }
 void Transportation::ConnectionManager::operator()(Transportation::packet::Datapack &datapack)
@@ -49,63 +63,39 @@ void Transportation::ConnectionManager::operator()(Transportation::packet::Datap
 void Transportation::ConnectionManager::operator~()
 {
 	WSA::SocketAddress sa(this->connection.IP, this->connection.RP);
+	this->opening = HANDSHAKING;
 
 	(*this->network) += this;
 	try
 	{
 		Transportation::packet::Datapack *datapack = (*this)();
-		if (datapack->ID == Transportation::packet::Disconnect::ID)
+		this->OL++;
+		if (datapack->ID == Transportation::packet::Disconnect::ID || datapack->ID == Transportation::packet::Handshaking::ID)
 		{
-			Transportation::packet::Disconnect &disconnect = *((Transportation::packet::Disconnect *) datapack);
-			disconnect(*this);
-			delete datapack;
-			return;
+			(*datapack)(*this);
 		}
-		if (datapack->ID != Transportation::packet::Handshaking::ID)
+		else
 		{
-			delete datapack;
-			delete this;
-			return;
+			this->opening = CLOSED;
 		}
-
-		Transportation::packet::Handshaking &handshaking = *((Transportation::packet::Handshaking *) datapack);
-		if (handshaking.version > Transportation::protocol::version)
-		{
-			Transportation::packet::Disconnect disconnect;
-			disconnect.message = "Unsupported version";
-			(*this)(disconnect);
-			(*this->network) -= this;
-			delete this;
-			delete datapack;
-			return;
-		}
-		if (!handshaking.name)
-		{
-			Transportation::packet::Disconnect disconnect;
-			disconnect.message = "Empty username";
-			(*this)(disconnect);
-			(*this->network) -= this;
-			delete this;
-			delete datapack;
-			return;
-		}
-
-		this->name = handshaking.name;
-		handshaking.version = Transportation::protocol::version;
-		handshaking.name = Transportation::username;
-		(*this)(handshaking);
 		delete datapack;
+
+		if (_InterlockedCompareExchange8(&this->opening, PLAYING, HANDSHAKING))
+		{
+			Transportation::cout << '[' << this->name << "] (" << sa.stringify() << ") joined the communication" << Streaming::LF;
+		}
+		this->OL--;
 	}
 	catch (Memory::exception &exce)
 	{
-		(*this->network) -= this;
-		delete this;
-		return;
+		this->opening = CLOSED;
+		while (this->OL)
+		{
+			this->OL--;
+		}
 	}
 
-	Transportation::cout << '[' << this->name << "] (" << sa.stringify() << ") joined the communication" << Streaming::LF;
-
-	while (this->connection.opening())
+	while (this->opening == PLAYING && this->connection.opening())
 	{
 		try
 		{
@@ -120,5 +110,34 @@ void Transportation::ConnectionManager::operator~()
 	}
 
 	(*this->network) -= this;
+	this->close("close");
+	while (this->waiting)
+	{
+		WTM::thread::sleep(0);
+	}
 	delete this;
+}
+void Transportation::ConnectionManager::close(const String::string &message)
+{
+	// increment waiting counter
+	(*this)++;
+	// current thread should handle close signal
+	char state = _InterlockedCompareExchange8(&this->opening, CLOSED, PLAYING);
+	state = (state != PLAYING) ? _InterlockedCompareExchange8(&this->opening, CLOSED, HANDSHAKING) : state;
+	if (state != CLOSED)
+	{
+		// send disconnect to remote
+		Transportation::packet::Disconnect disconnect;
+		disconnect.message = message;
+		// catch and ignore all exceptions
+		try
+		{
+			(*this)(disconnect);
+		}
+		catch (...)
+		{
+		}
+	}
+	// decrement waiting counter
+	(*this)--;
 }

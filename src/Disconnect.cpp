@@ -6,7 +6,7 @@
 Transportation::packet::Disconnect::Disconnect(): Transportation::packet::Datapack(Transportation::packet::Disconnect::ID)
 {
 }
-void Transportation::packet::Disconnect::operator()(Transportation::ConnectionManager &cm) const
+void Transportation::packet::Disconnect::operator()(Transportation::ConnectionManager &cm)
 {
 	if (cm.name)
 	{

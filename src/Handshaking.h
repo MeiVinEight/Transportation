@@ -16,7 +16,7 @@ namespace Transportation
 			WORD version;
 			String::string name;
 			Handshaking();
-			void operator()(Transportation::ConnectionManager &) const override;
+			void operator()(Transportation::ConnectionManager &) override;
 			Transportation::packet::Handshaking &operator<<(Streaming::stream &) override;
 			Transportation::packet::Handshaking &operator>>(Streaming::stream &) override;
 		};

@@ -20,6 +20,8 @@ namespace Transportation
 		void operator-=(Transportation::ConnectionManager *);
 		Transportation::ConnectionManager *operator[](const String::string &);
 		void operator~();
+		void connect(const WSA::SocketAddress &);
+		void close();
 	};
 }
 

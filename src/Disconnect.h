@@ -15,7 +15,7 @@ namespace Transportation
 			static const DWORD ID = 1;
 			String::string message;
 			Disconnect();
-			void operator()(Transportation::ConnectionManager &) const override;
+			void operator()(Transportation::ConnectionManager &) override;
 			Transportation::packet::Disconnect &operator<<(Streaming::stream &) override;
 			Transportation::packet::Disconnect &operator>>(Streaming::stream &) override;
 		};

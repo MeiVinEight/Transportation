@@ -3,11 +3,12 @@
 #include "Handshaking.h"
 #include "ConnectionManager.h"
 #include "Transportation.h"
+#include "protocol.h"
 
 Transportation::packet::Handshaking::Handshaking(): Transportation::packet::Datapack(Transportation::packet::Handshaking::ID)
 {
 }
-void Transportation::packet::Handshaking::operator()(Transportation::ConnectionManager &cm) const
+void Transportation::packet::Handshaking::operator()(Transportation::ConnectionManager &cm)
 {
 	// String::string str = "[00:00:00:00]:0000 Handshaking V:0000 N:";
 	/*
@@ -24,6 +25,26 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 	str += this->name;
 	Transportation::cout << str << Streaming::LF;
 	*/
+	cm.OL++;
+	if (this->version > Transportation::protocol::version)
+	{
+		cm.close("Unsupported version");
+		goto END;
+	}
+	if (!this->name)
+	{
+		cm.close("Empty username");
+		goto END;
+	}
+	if ((*cm.network)[this->name])
+	{
+		cm.close("Username already exists");
+	}
+	cm.name = this->name;
+	this->name = Transportation::username;
+	cm(*this);
+	END:;
+	cm.OL--;
 }
 Transportation::packet::Handshaking &Transportation::packet::Handshaking::operator<<(Streaming::stream &stream)
 {
