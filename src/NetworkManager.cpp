@@ -56,6 +56,7 @@ Transportation::ConnectionManager *Transportation::NetworkManager::operator[](co
 			}
 		}
 	}
+	ret ? (*ret)++ : void();
 	this->lock--;
 	return ret;
 }
