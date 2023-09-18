@@ -1,5 +1,6 @@
 #include <endian.h>
 #include <cthread.h>
+#include <stringstream.h>
 
 #include "Transportation.h"
 #include "NetworkManager.h"
@@ -53,8 +54,10 @@ Transportation::ConnectionManager &Transportation::ConnectionManager::operator<<
 	{
 		this->OL++;
 		WORD id = Memory::BE::get(datapack.ID);
-		this->stream.write(&id, 2);
-		datapack >> this->stream;
+		Streaming::string string;
+		string.write(&id, 2);
+		datapack >> string;
+		this->stream.write(string.address, string.position);
 		this->OL--;
 	}
 	return *this;
