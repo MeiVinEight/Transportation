@@ -130,20 +130,23 @@ void Transportation::ConnectionManager::close(const String::string &message)
 {
 	// increment waiting counter
 	(*this)++;
-	// current thread should handle close signal
-	char state = this->opening;
-	if ((state == _InterlockedCompareExchange8(&this->opening, CLOSED, state)) && (this->opening == CLOSED))
+	if (this->opening != CLOSED)
 	{
-		// send disconnect to remote
-		Transportation::packet::Disconnect disconnect;
-		disconnect.message = message;
-		// catch and ignore all exceptions
-		try
+		// current thread should handle close signal
+		char state = this->opening;
+		if ((state == _InterlockedCompareExchange8(&this->opening, CLOSED, state)) && (this->opening == CLOSED))
 		{
-			(*this)(disconnect);
-		}
-		catch (...)
-		{
+			// send disconnect to remote
+			Transportation::packet::Disconnect disconnect;
+			disconnect.message = message;
+			// catch and ignore all exceptions
+			try
+			{
+				(*this)(disconnect);
+			}
+			catch (...)
+			{
+			}
 		}
 	}
 	// decrement waiting counter
