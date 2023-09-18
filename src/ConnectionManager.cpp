@@ -49,11 +49,14 @@ Transportation::packet::Datapack *Transportation::ConnectionManager::operator()(
 }
 Transportation::ConnectionManager &Transportation::ConnectionManager::operator<<(Transportation::packet::Datapack &datapack)
 {
-	this->OL++;
-	WORD id = Memory::BE::get(datapack.ID);
-	this->stream.write(&id, 2);
-	datapack >> this->stream;
-	this->OL--;
+	if ((this->opening != CLOSED) || (datapack.ID == Transportation::packet::Disconnect::ID))
+	{
+		this->OL++;
+		WORD id = Memory::BE::get(datapack.ID);
+		this->stream.write(&id, 2);
+		datapack >> this->stream;
+		this->OL--;
+	}
 	return *this;
 }
 void Transportation::ConnectionManager::operator()(Transportation::packet::Datapack &datapack)
@@ -80,7 +83,7 @@ void Transportation::ConnectionManager::operator~()
 		}
 		delete datapack;
 
-		if (_InterlockedCompareExchange8(&this->opening, PLAYING, HANDSHAKING))
+		if (_InterlockedCompareExchange8(&this->opening, PLAYING, HANDSHAKING) == HANDSHAKING)
 		{
 			Transportation::cout << '[' << this->name << "] (" << sa.stringify() << ") joined the communication" << Streaming::LF;
 		}
@@ -122,9 +125,8 @@ void Transportation::ConnectionManager::close(const String::string &message)
 	// increment waiting counter
 	(*this)++;
 	// current thread should handle close signal
-	char state = _InterlockedCompareExchange8(&this->opening, CLOSED, PLAYING);
-	state = (state != PLAYING) ? _InterlockedCompareExchange8(&this->opening, CLOSED, HANDSHAKING) : state;
-	if (state != CLOSED)
+	char state = this->opening;
+	if ((state == _InterlockedCompareExchange8(&this->opening, CLOSED, state)) && (this->opening == CLOSED))
 	{
 		// send disconnect to remote
 		Transportation::packet::Disconnect disconnect;
