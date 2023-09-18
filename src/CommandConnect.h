@@ -8,8 +8,8 @@ namespace Transportation
 	class CommandConnect: public Transportation::CMD
 	{
 		public:
-		__declspec(dllexport) CommandConnect();
-		__declspec(dllexport) bool operator()(const String::string &) const override;
+		CommandConnect();
+		bool operator()(const String::string &) const override;
 	};
 }
 
