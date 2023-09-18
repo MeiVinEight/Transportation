@@ -119,6 +119,7 @@ void Transportation::ConnectionManager::operator~()
 
 	(*this->network) -= this;
 	this->close("close");
+	this->connection.close();
 	while (this->waiting)
 	{
 		WTM::thread::sleep(0);

@@ -17,7 +17,7 @@ void Transportation::packet::Disconnect::operator()(Transportation::ConnectionMa
 		Transportation::cout << '(' << WSA::SocketAddress(cm.connection.IP, cm.connection.RP).stringify() << ") ";
 	}
 	Transportation::cout << "Disconnect: " << this->message << Streaming::LF;
-	cm.connection.close();
+	cm.close(this->message);
 }
 Transportation::packet::Disconnect &Transportation::packet::Disconnect::operator<<(Streaming::stream &stream)
 {
