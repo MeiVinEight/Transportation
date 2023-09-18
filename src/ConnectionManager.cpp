@@ -71,6 +71,11 @@ void Transportation::ConnectionManager::operator~()
 	(*this->network) += this;
 	try
 	{
+		Transportation::packet::Handshaking handshaking;
+		handshaking.name = Transportation::username;
+		handshaking.version = Transportation::protocol::version;
+		(*this)(handshaking);
+
 		Transportation::packet::Datapack *datapack = (*this)();
 		this->OL++;
 		if (datapack->ID == Transportation::packet::Disconnect::ID || datapack->ID == Transportation::packet::Handshaking::ID)

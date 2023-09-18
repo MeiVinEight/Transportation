@@ -40,9 +40,6 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 	{
 		cm.close("Username already exists");
 	}
-	cm.name = this->name;
-	this->name = Transportation::username;
-	cm(*this);
 	END:;
 	cm.OL--;
 }
