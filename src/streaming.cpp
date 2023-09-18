@@ -2,11 +2,7 @@
 #include <cthread.h>
 
 #include "Tstreaming.h"
-
-extern "C"
-{
-long _InterlockedCompareExchange(long volatile*, long, long);
-}
+#include "atomic.h"
 
 Transportation::streaming::streaming(Streaming::stream *stream): Streaming::format(stream)
 {

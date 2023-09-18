@@ -1,12 +1,14 @@
 #include <sstring.h>
 #include <standardstream.h>
 #include <cthread.h>
+#include <exception.h>
 #include <streaming.h>
 #include <stringstream.h>
 
 #include "Transportation.h"
 #include "CMD.h"
 #include "CommandStop.h"
+#include "CommandConnect.h"
 
 DWORD T01C(void *)
 {
@@ -56,6 +58,12 @@ DWORD T01C(void *)
 		const Transportation::CMD *obj = Transportation::command[cmd];
 		running = (!obj) || (*obj)(options);
 	}
+	Transportation::cout << "Command thread exit" << Streaming::LF;
+	return 0;
+}
+DWORD T02C(void *p)
+{
+	~*((Transportation::NetworkManager *) p);
 	return 0;
 }
 
@@ -63,9 +71,16 @@ int main()
 {
 	Transportation::cout << "Register commands" << Streaming::LF;
 	Transportation::command += new Transportation::CommandStop();
+	Transportation::command += new Transportation::CommandConnect();
 
 	Transportation::cout << "Create console command thread" << Streaming::LF;
 	WTM::thread::create(T01C, nullptr);
+
+	Transportation::cout << "Create connection listener" << Streaming::LF;
+	WTM::thread::create(T02C, &Transportation::network);
+
+	Transportation::cout << "Main thread exit" << Streaming::LF;
+
 	return 0;
 }
 
