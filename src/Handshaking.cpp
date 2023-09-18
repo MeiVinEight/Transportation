@@ -39,7 +39,9 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 	if ((*cm.network)[this->name])
 	{
 		cm.close("Username already exists");
+		goto END;
 	}
+	cm.name = this->name;
 	END:;
 	cm.OL--;
 }
