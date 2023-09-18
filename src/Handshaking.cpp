@@ -36,8 +36,10 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 		cm.close("Empty username");
 		goto END;
 	}
-	if ((*cm.network)[this->name])
+	Transportation::ConnectionManager *cms = nullptr;
+	if ((cms = (*cm.network)[this->name]))
 	{
+		(*cms)--;
 		cm.close("Username already exists");
 		goto END;
 	}
