@@ -18,7 +18,6 @@ Transportation::NetworkManager::~NetworkManager()
 void Transportation::NetworkManager::operator+=(Transportation::ConnectionManager *cm)
 {
 	this->lock++;
-	(*cm)++;
 	Transportation::ConnectionManager **conn = new Transportation::ConnectionManager *[this->length + 1];
 	Memory::copy(conn, this->connection, sizeof(Transportation::ConnectionManager *) * this->length);
 	delete[] this->connection;
@@ -37,7 +36,6 @@ void Transportation::NetworkManager::operator-=(Transportation::ConnectionManage
 			this->connection[idx++] = this->connection[i];
 			continue;
 		}
-		(*this->connection[i])--;
 	}
 	this->length = idx;
 	this->lock--;
