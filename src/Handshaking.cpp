@@ -26,6 +26,7 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 	Transportation::cout << str << Streaming::LF;
 	*/
 	cm.OL++;
+	Transportation::ConnectionManager *cms;
 	if (this->version > Transportation::protocol::version)
 	{
 		cm.close("Unsupported version");
@@ -36,8 +37,9 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 		cm.close("Empty username");
 		goto END;
 	}
-	if ((*cm.network)[this->name])
+	if ((cms = (*cm.network)[this->name]))
 	{
+		(*cms)--;
 		cm.close("Username already exists");
 		goto END;
 	}

@@ -9,6 +9,8 @@
 #include "CMD.h"
 #include "CommandStop.h"
 #include "CommandConnect.h"
+#include "CommandClose.h"
+#include "CommandList.h"
 
 DWORD T01C(void *)
 {
@@ -72,6 +74,8 @@ int main()
 	Transportation::cout << "Register commands" << Streaming::LF;
 	Transportation::command += new Transportation::CommandStop();
 	Transportation::command += new Transportation::CommandConnect();
+	Transportation::command += new Transportation::CommandClose();
+	Transportation::command += new Transportation::CommandList();
 
 	Transportation::cout << "Create console command thread" << Streaming::LF;
 	WTM::thread::create(T01C, nullptr);

@@ -20,6 +20,7 @@ namespace Transportation
 		Transportation::NetworkManager *network;
 		WSA::Socket connection;
 		Streaming::fully stream;
+		WSA::SocketAddress address;
 		String::string name;
 		Concurrency::ReentrantLock IL;
 		Concurrency::ReentrantLock OL;
