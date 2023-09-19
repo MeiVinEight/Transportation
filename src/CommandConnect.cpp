@@ -13,11 +13,30 @@ bool Transportation::CommandConnect::operator()(const String::string &options) c
 	Streaming::string string;
 	string.address = options.address;
 	Streaming::format in(&string);
+
 	String::string ip;
 	DWORD port;
 	in >> ip >> port;
-	WSA::SocketAddress address(WSA::IP((char *) ip.native().address), port);
-	Transportation::cout << "Connect to " << address.stringify() << Streaming::LF;
-	Transportation::network.connect(address);
+
+	WSA::SocketAddress address;
+	try
+	{
+		address = WSA::SocketAddress(WSA::IP((char *) ip.native().address), port);
+	}
+	catch (Memory::exception &exce)
+	{
+		Transportation::cout << "Wrong IP: " << ip << Streaming::LF;
+		return true;
+	}
+
+	try
+	{
+		Transportation::network.connect(address);
+	}
+	catch (Memory::exception &exce)
+	{
+		Transportation::cout << "Cannot connect to " << address.stringify() << Streaming::LF;
+		Transportation::cout << exce;
+	}
 	return true;
 }

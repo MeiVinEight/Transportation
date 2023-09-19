@@ -124,22 +124,14 @@ void Transportation::NetworkManager::operator~()
 void Transportation::NetworkManager::connect(const WSA::SocketAddress &sa)
 {
 	WSA::Socket socket;
-	try
+	socket.connect(sa);
+	Transportation::ConnectionManager *cm = new Transportation::ConnectionManager(this, (WSA::Socket &&) socket);
+	DWORD (*lambda)(void *) = [](void *pVoid) -> DWORD
 	{
-		socket.connect(sa);
-		Transportation::ConnectionManager *cm = new Transportation::ConnectionManager(this, (WSA::Socket &&) socket);
-		DWORD (*lambda)(void *) = [](void *pVoid) -> DWORD
-		{
-			~*((Transportation::ConnectionManager *) pVoid);
-			return 0;
-		};
-		WTM::thread::create(lambda, cm);
-	}
-	catch (Memory::exception &exce)
-	{
-		Transportation::cout << "Cannot connect to " << sa.stringify() << Streaming::LF;
-		Transportation::cout << exce;
-	}
+		~*((Transportation::ConnectionManager *) pVoid);
+		return 0;
+	};
+	WTM::thread::create(lambda, cm);
 }
 void Transportation::NetworkManager::close()
 {
