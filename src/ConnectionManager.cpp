@@ -13,7 +13,8 @@
 Transportation::ConnectionManager::ConnectionManager(Transportation::NetworkManager *network, WSA::Socket socket):
 network(network),
 connection((WSA::Socket &&) socket),
-stream(&this->connection)
+stream(&this->connection),
+address(this->connection.IP, this->connection.RP)
 {
 }
 Transportation::ConnectionManager::~ConnectionManager()
@@ -68,7 +69,6 @@ void Transportation::ConnectionManager::operator()(Transportation::packet::Datap
 }
 void Transportation::ConnectionManager::operator~()
 {
-	WSA::SocketAddress sa(this->connection.IP, this->connection.RP);
 	this->opening = HANDSHAKING;
 
 	(*this->network) += this;
@@ -93,7 +93,7 @@ void Transportation::ConnectionManager::operator~()
 
 		if (_InterlockedCompareExchange8(&this->opening, PLAYING, HANDSHAKING) == HANDSHAKING)
 		{
-			Transportation::cout << '[' << this->name << "] (" << sa.stringify() << ") joined the communication" << Streaming::LF;
+			Transportation::cout << '[' << this->name << "] (" << this->address.stringify() << ") joined the communication" << Streaming::LF;
 		}
 		this->OL--;
 	}
@@ -120,13 +120,13 @@ void Transportation::ConnectionManager::operator~()
 		}
 	}
 
-	(*this->network) -= this;
 	this->close("close");
 	this->connection.close();
 	while (this->waiting)
 	{
 		WTM::thread::sleep(0);
 	}
+	(*this->network) -= this;
 	delete this;
 }
 void Transportation::ConnectionManager::close(const String::string &message)
