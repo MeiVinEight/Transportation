@@ -13,9 +13,9 @@
 Transportation::ConnectionManager::ConnectionManager(Transportation::NetworkManager *network, WSA::Socket socket):
 network(network),
 connection((WSA::Socket &&) socket),
-stream(&this->connection),
-address(this->connection.IP, this->connection.RP)
+stream(&this->connection)
 {
+	this->address = WSA::SocketAddress(this->connection.IP, this->connection.RP);
 }
 Transportation::ConnectionManager::~ConnectionManager()
 {
