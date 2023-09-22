@@ -44,7 +44,7 @@ Transportation::packet::FileSearch &Transportation::packet::FileSearch::operator
 Transportation::packet::FileSearch &Transportation::packet::FileSearch::operator>>(Streaming::stream &stream)
 {
 	Streaming::fully out(&stream);
-	WORD len = Memory::BE::get(this->name.length());
+	WORD len = Memory::BE::get((WORD) this->name.length());
 	out.write(&len, 2);
 	out.write(this->name.address);
 	return *this;

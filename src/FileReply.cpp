@@ -47,7 +47,7 @@ Transportation::packet::FileReply &Transportation::packet::FileReply::operator<<
 Transportation::packet::FileReply &Transportation::packet::FileReply::operator>>(Streaming::stream &stream)
 {
 	Streaming::fully out(&stream);
-	WORD len = Memory::BE::get(this->name.length());
+	WORD len = Memory::BE::get((WORD) this->name.length());
 	out.write(&len, 2);
 	out.write(this->name.address);
 	QWORD size = Memory::BE::get(this->length);
