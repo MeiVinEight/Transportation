@@ -49,13 +49,14 @@ void Transportation::packet::Handshaking::operator()(Transportation::ConnectionM
 }
 Transportation::packet::Handshaking &Transportation::packet::Handshaking::operator<<(Streaming::stream &stream)
 {
-	stream.read(&this->version, 2);
+	Streaming::fully in(&stream);
+	in.read(&this->version, 2);
 	this->version = Memory::BE::get(this->version);
 
 	BYTE length = 0;
-	stream.read(&length, 1);
+	in.read(&length, 1);
 	void *buf = Memory::allocate(length);
-	stream.read(buf, length);
+	in.read(buf, length);
 	this->name = String::string(buf, length);
 	Memory::free(buf);
 
@@ -63,11 +64,12 @@ Transportation::packet::Handshaking &Transportation::packet::Handshaking::operat
 }
 Transportation::packet::Handshaking &Transportation::packet::Handshaking::operator>>(Streaming::stream &stream)
 {
+	Streaming::fully out(&stream);
 	WORD ver = Memory::BE::get(this->version);
-	stream.write(&ver, 2);
+	out.write(&ver, 2);
 
 	BYTE length = this->name.length();
-	stream.write(&length, 1);
-	stream.write(this->name.address.address, length);
+	out.write(&length, 1);
+	out.write(this->name.address.address, length);
 	return *this;
 }
