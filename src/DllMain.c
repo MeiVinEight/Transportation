@@ -3,6 +3,7 @@ void CRTStartup(void);
 
 #ifndef CMAKE_BUILD
 
+int _fltused = 1;
 #pragma section(".CRT$XCA", read)
 #pragma section(".CRT$XCZ", read)
 #pragma comment(linker, "/MERGE:.CRT=.rdata")

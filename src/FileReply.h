@@ -16,7 +16,8 @@ namespace Transportation
 			static const DWORD ID = 3;
 			FileReply();
 			String::string name;
-			QWORD length;
+			QWORD length = 0;
+			unsigned char more = false;
 			void operator()(Transportation::ConnectionManager &) override;
 			Transportation::packet::FileReply &operator<<(Streaming::stream &) override;
 			Transportation::packet::FileReply &operator>>(Streaming::stream &) override;
