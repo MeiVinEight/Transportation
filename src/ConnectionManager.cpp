@@ -12,8 +12,7 @@
 
 Transportation::ConnectionManager::ConnectionManager(Transportation::NetworkManager *network, WSA::Socket socket):
 network(network),
-connection((WSA::Socket &&) socket),
-stream(&this->connection)
+connection((WSA::Socket &&) socket)
 {
 	this->address = WSA::SocketAddress(this->connection.IP, this->connection.RP);
 }
@@ -21,7 +20,6 @@ Transportation::ConnectionManager::~ConnectionManager()
 {
 	this->network = nullptr;
 	this->connection.close();
-	this->stream.stream = nullptr;
 	this->name = String::string();
 }
 void Transportation::ConnectionManager::operator++(int)
@@ -36,10 +34,11 @@ Transportation::ConnectionManager &Transportation::ConnectionManager::operator>>
 {
 	this->IL++;
 	WORD id = 0;
-	this->stream.read(&id, 2);
+	Streaming::fully in(&this->connection);
+	in.read(&id, 2);
 	id = Memory::BE::get(id);
 	datapack = Transportation::protocol::datapack[id]();
-	(*datapack) << this->stream;
+	(*datapack) << this->connection;
 	this->IL--;
 	return *this;
 }
@@ -58,7 +57,8 @@ Transportation::ConnectionManager &Transportation::ConnectionManager::operator<<
 		Streaming::string string;
 		string.write(&id, 2);
 		datapack >> string;
-		this->stream.write(string.address, string.position);
+		Streaming::fully out(&this->connection);
+		out.write(string.address, string.position);
 		this->OL--;
 	}
 	return *this;
@@ -120,13 +120,13 @@ void Transportation::ConnectionManager::operator~()
 		}
 	}
 
+	(*this->network) -= this;
 	this->close("close");
 	this->connection.close();
 	while (this->waiting)
 	{
 		WTM::thread::sleep(0);
 	}
-	(*this->network) -= this;
 	delete this;
 }
 void Transportation::ConnectionManager::close(const String::string &message)

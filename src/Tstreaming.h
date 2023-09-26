@@ -15,6 +15,7 @@ namespace Transportation
 		DWORD write(const void *, DWORD) override;
 		void lock();
 		void unlock();
+		static Memory::string time();
 	};
 } // Transportation
 

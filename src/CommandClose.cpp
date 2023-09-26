@@ -21,6 +21,10 @@ bool Transportation::CommandClose::operator()(const String::string &options) con
 	Transportation::ConnectionManager *cm = Transportation::network[name];
 	if (cm)
 	{
+		if (!msg)
+		{
+			msg = "close";
+		}
 		cm->close(msg);
 		(*cm)--;
 	}

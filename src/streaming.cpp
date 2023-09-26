@@ -24,22 +24,8 @@ DWORD Transportation::streaming::write(const void *b, DWORD length)
 		Memory::copy(this->memory.address + pos, beg, cur - beg);
 		if (LF)
 		{
-			char prefix[] = "[00:00:00] ";
-			QWORD time = Timestamp::current();
-			time /= 1000;
-			QWORD SS = time % 60;
-			time /= 60;
-			QWORD MM = time % 60;
-			time /= 60;
-			QWORD HH = time % 24;
-			prefix[1] = (char) ('0' + (HH / 10));
-			prefix[2] = (char) ('0' + (HH % 10));
-			prefix[4] = (char) ('0' + (MM / 10));
-			prefix[5] = (char) ('0' + (MM % 10));
-			prefix[7] = (char) ('0' + (SS / 10));
-			prefix[8] = (char) ('0' + (SS % 10));
 			this->Streaming::format::write("\u001B7\n\u001B8\x1B[1B\u001B7\x1B[1A\x1B[1G\x1B[1L", 23);
-			this->Streaming::format::write(prefix, 11);
+			this->Streaming::format::write(Transportation::streaming::time().address, 11);
 			ret += this->Streaming::format::write(this->memory.address, this->memory.length);
 			this->Streaming::format::write("\u001B8", 2);
 			this->memory.resize(0);
@@ -69,4 +55,24 @@ void Transportation::streaming::unlock()
 {
 	// clear occupier
 	this->exclusive = 0;
+}
+Memory::string Transportation::streaming::time()
+{
+	char prefix[] = "[00:00:00] ";
+	QWORD time = Timestamp::current();
+	time /= 1000;
+	QWORD SS = time % 60;
+	time /= 60;
+	QWORD MM = time % 60;
+	time /= 60;
+	QWORD HH = time % 24;
+	prefix[1] = (char) ('0' + (HH / 10));
+	prefix[2] = (char) ('0' + (HH % 10));
+	prefix[4] = (char) ('0' + (MM / 10));
+	prefix[5] = (char) ('0' + (MM % 10));
+	prefix[7] = (char) ('0' + (SS / 10));
+	prefix[8] = (char) ('0' + (SS % 10));
+	Memory::string ret(11);
+	Memory::copy(ret.address, prefix, 11);
+	return ret;
 }

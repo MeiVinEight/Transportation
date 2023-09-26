@@ -21,18 +21,20 @@ void Transportation::packet::Disconnect::operator()(Transportation::ConnectionMa
 }
 Transportation::packet::Disconnect &Transportation::packet::Disconnect::operator<<(Streaming::stream &stream)
 {
+	Streaming::fully in(&stream);
 	BYTE length = 0;
-	stream.read(&length, 1);
+	in.read(&length, 1);
 	void *buf = Memory::allocate(length);
-	stream.read(buf, length);
+	in.read(buf, length);
 	this->message = String::string(buf, length);
 	Memory::free(buf);
 	return *this;
 }
 Transportation::packet::Disconnect &Transportation::packet::Disconnect::operator>>(Streaming::stream &stream)
 {
+	Streaming::fully out(&stream);
 	BYTE length = this->message.length();
-	stream.write(&length, 1);
-	stream.write(this->message.address.address, length);
+	out.write(&length, 1);
+	out.write(this->message.address.address, length);
 	return *this;
 }
