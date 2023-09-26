@@ -12,6 +12,7 @@
 		"/NOD",
 		"/INCREMENTAL:NO",
 		"Secur32.lib",
+		"Kernel32.lib",
 		"lib\\Filesystem.lib",
 		"lib\\Memory.lib",
 		"lib\\Streaming.lib",
