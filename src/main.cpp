@@ -11,6 +11,7 @@
 #include "CommandConnect.h"
 #include "CommandClose.h"
 #include "CommandList.h"
+#include "CommandSearch.h"
 
 DWORD T01C(void *)
 {
@@ -76,6 +77,7 @@ int main()
 	Transportation::command += new Transportation::CommandConnect();
 	Transportation::command += new Transportation::CommandClose();
 	Transportation::command += new Transportation::CommandList();
+	Transportation::command += new Transportation::CommandSearch();
 
 	Transportation::cout << "Create console command thread" << Streaming::LF;
 	WTM::thread::create(T01C, nullptr);
